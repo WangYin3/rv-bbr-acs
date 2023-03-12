@@ -29,6 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 TOP_DIR=`pwd`
+QEMU_SRC_VERSION=68c05247ba4b849e547ec4153f366be5c352bb0b
 
 get_cross_compiler()
 {
@@ -72,7 +73,16 @@ get_uefi_src()
     git submodule update --init
     popd
 }
-
+get_qemu_src()
+{
+    echo "Downloading qemu. TAG : $QEMU_SRC_VERSION"
+    git clone --depth 1 --single-branch \
+    --branch dev-upstream https://github.com/ventanamicro/qemu.git
+    pushd $TOP_DIR/qemu
+    git checkout $QEMU_SRC_VERSION
+    git submodule update --init --recursive
+    popd
+}
 
 sudo apt install git curl mtools gdisk gcc\
  openssl automake autotools-dev libtool bison flex\
@@ -80,5 +90,6 @@ sudo apt install git curl mtools gdisk gcc\
 
 get_uefi_src
 get_sct_src
+get_qemu_src
 #get_cross_compiler
 #get_fwts_src

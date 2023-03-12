@@ -51,4 +51,4 @@ init_dir
 # source ./build-scripts/build-fwts.sh IR S
 source ./build-scripts/build-sct.sh  IR S
 # source ./build-scripts/build-uefi-apps.sh  IR S
-
+source ./build-scripts/build-qemu.sh
