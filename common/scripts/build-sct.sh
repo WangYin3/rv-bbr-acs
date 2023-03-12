@@ -53,7 +53,7 @@ UEFI_PATH=edk2
 SCT_PATH=edk2-test
 UEFI_TOOLCHAIN=GCC5
 UEFI_BUILD_MODE=DEBUG
-TARGET_ARCH=AARCH64
+TARGET_ARCH=RISCV64
 KEYS_DIR=$TOP_DIR/security-interface-extension-keys
 TEST_DB1_KEY=$KEYS_DIR/TestDB1.key
 TEST_DB1_CRT=$KEYS_DIR/TestDB1.crt
@@ -104,84 +104,86 @@ do_build()
 {
    
     pushd $TOP_DIR/$SCT_PATH
-    export KEYS_DIR=$TOP_DIR/security-interface-extension-keys
-    export EDK2_TOOLCHAIN=$UEFI_TOOLCHAIN
-    export KEYS_DIR=$TOP_DIR/security-interface-extension-keys
-    export EDK2_TOOLCHAIN=$UEFI_TOOLCHAIN
-    if [ $BUILD_PLAT = SIE ]; then
-        CROSS_COMPILE_DIR=$(dirname $CROSS_COMPILE)
-        export PATH="$TOP_DIR/efitools:$PATH:$CROSS_COMPILE_DIR"
-        export ${UEFI_TOOLCHAIN}_AARCH64_PREFIX=$CROSS_COMPILE
-    else
-        export PATH="$TOP_DIR/efitools:$PATH"
-    fi
+    # export KEYS_DIR=$TOP_DIR/security-interface-extension-keys
+    # export EDK2_TOOLCHAIN=$UEFI_TOOLCHAIN
+    # export KEYS_DIR=$TOP_DIR/security-interface-extension-keys
+    # export EDK2_TOOLCHAIN=$UEFI_TOOLCHAIN
+    # if [ $BUILD_PLAT = SIE ]; then
+    #     CROSS_COMPILE_DIR=$(dirname $CROSS_COMPILE)
+    #     export PATH="$TOP_DIR/efitools:$PATH:$CROSS_COMPILE_DIR"
+    #     export ${UEFI_TOOLCHAIN}_AARCH64_PREFIX=$CROSS_COMPILE
+    # else
+    #     export PATH="$TOP_DIR/efitools:$PATH"
+    # fi
 
 
-    export EDK2_TOOLCHAIN=$UEFI_TOOLCHAIN
-    if [[ $arch != "aarch64" ]]; then
-        export ${UEFI_TOOLCHAIN}_AARCH64_PREFIX=$CROSS_COMPILE
-    fi
+    # export EDK2_TOOLCHAIN=$UEFI_TOOLCHAIN
+    # if [[ $arch != "aarch64" ]]; then
+    #     export ${UEFI_TOOLCHAIN}_AARCH64_PREFIX=$CROSS_COMPILE
+    # fi
     
-    # export EDK2 enviromnent variables
-    export PACKAGES_PATH=$TOP_DIR/$UEFI_PATH
-    export PYTHON_COMMAND=/usr/bin/python3
-    export WORKSPACE=$TOP_DIR/$SCT_PATH/uefi-sct
-    #export HOST_ARCH = `uname -m`
-    #MACHINE=`uname -m`
+    # # export EDK2 enviromnent variables
+    # export PACKAGES_PATH=$TOP_DIR/$UEFI_PATH
+    # export PYTHON_COMMAND=/usr/bin/python3
+    # export WORKSPACE=$TOP_DIR/$SCT_PATH/uefi-sct
+    # #export HOST_ARCH = `uname -m`
+    # #MACHINE=`uname -m`
 
-    #Build base tools
+    # #Build base tools
+    ln -s $TOP_DIR/edk2 $TOP_DIR/$SCT_PATH/uefi-sct/edk2
     source $TOP_DIR/$UEFI_PATH/edksetup.sh
     make -C $TOP_DIR/$UEFI_PATH/BaseTools
     
-    #Copy over extra files needed for SBBR tests
-    if [[ $BUILD_PLAT != SIE ]] ; then
-        cp -r $SBBR_TEST_DIR/SbbrBootServices uefi-sct/SctPkg/TestCase/UEFI/EFI/BootServices/
-        cp -r $SBBR_TEST_DIR/SbbrEfiSpecVerLvl $SBBR_TEST_DIR/SbbrRequiredUefiProtocols $SBBR_TEST_DIR/SbbrSmbios $SBBR_TEST_DIR/SbbrSysEnvConfig uefi-sct/SctPkg/TestCase/UEFI/EFI/Generic/
-        cp -r $SBBR_TEST_DIR/SBBRRuntimeServices uefi-sct/SctPkg/TestCase/UEFI/EFI/RuntimeServices/
-        cp $SBBR_TEST_DIR/BBR_SCT.dsc uefi-sct/SctPkg/UEFI/
-        cp $SBBR_TEST_DIR/build_bbr.sh uefi-sct/SctPkg/
-        # copy SIE SCT tests to edk2-test
-        cp -r $BBSR_TEST_DIR/BBSRVariableSizeTest uefi-sct/SctPkg/TestCase/UEFI/EFI/RuntimeServices
-        cp -r $BBSR_TEST_DIR/SecureBoot uefi-sct/SctPkg/TestCase/UEFI/EFI/RuntimeServices
-        cp -r $BBSR_TEST_DIR/TCG2Protocol uefi-sct/SctPkg/TestCase/UEFI/EFI/Protocol
-        cp -r $BBSR_TEST_DIR/TCG2.h uefi-sct/SctPkg/UEFI/Protocol
-    fi
+    # #Copy over extra files needed for SBBR tests
+    # if [[ $BUILD_PLAT != SIE ]] ; then
+    #     cp -r $SBBR_TEST_DIR/SbbrBootServices uefi-sct/SctPkg/TestCase/UEFI/EFI/BootServices/
+    #     cp -r $SBBR_TEST_DIR/SbbrEfiSpecVerLvl $SBBR_TEST_DIR/SbbrRequiredUefiProtocols $SBBR_TEST_DIR/SbbrSmbios $SBBR_TEST_DIR/SbbrSysEnvConfig uefi-sct/SctPkg/TestCase/UEFI/EFI/Generic/
+    #     cp -r $SBBR_TEST_DIR/SBBRRuntimeServices uefi-sct/SctPkg/TestCase/UEFI/EFI/RuntimeServices/
+    #     cp $SBBR_TEST_DIR/BBR_SCT.dsc uefi-sct/SctPkg/UEFI/
+    #     cp $SBBR_TEST_DIR/build_bbr.sh uefi-sct/SctPkg/
+    #     # copy SIE SCT tests to edk2-test
+    #     cp -r $BBSR_TEST_DIR/BBSRVariableSizeTest uefi-sct/SctPkg/TestCase/UEFI/EFI/RuntimeServices
+    #     cp -r $BBSR_TEST_DIR/SecureBoot uefi-sct/SctPkg/TestCase/UEFI/EFI/RuntimeServices
+    #     cp -r $BBSR_TEST_DIR/TCG2Protocol uefi-sct/SctPkg/TestCase/UEFI/EFI/Protocol
+    #     cp -r $BBSR_TEST_DIR/TCG2.h uefi-sct/SctPkg/UEFI/Protocol
+    # fi
     
-    #Startup/runtime files.
-    mkdir -p uefi-sct/SctPkg/BBR
-    if [ $BUILD_PLAT = IR ]; then
-    #EBBR
-    cp $BBR_DIR/ebbr/config/EBBRStartup.nsh uefi-sct/SctPkg/BBR/
-    cp $BBR_DIR/ebbr/config/EBBR.seq uefi-sct/SctPkg/BBR/
-    cp $BBR_DIR/ebbr/config/EBBR_manual.seq uefi-sct/SctPkg/BBR/
-    cp $BBR_DIR/ebbr/config/EBBR_extd_run.seq uefi-sct/SctPkg/BBR/
-    cp $BBR_DIR/ebbr/config/EfiCompliant_EBBR.ini uefi-sct/SctPkg/BBR/
-    elif [ $BUILD_PLAT = ES ]; then
-    #SBBR
-    cp $BBR_DIR/sbbr/config/SBBRStartup.nsh uefi-sct/SctPkg/BBR/
-    cp $BBR_DIR/sbbr/config/SBBR.seq uefi-sct/SctPkg/BBR/
-    cp $BBR_DIR/sbbr/config/SBBR_manual.seq uefi-sct/SctPkg/BBR/
-    cp $BBR_DIR/sbbr/config/SBBR_extd_run.seq uefi-sct/SctPkg/BBR/
-    cp $BBR_DIR/sbbr/config/EfiCompliant_SBBR.ini  uefi-sct/SctPkg/BBR/
-    fi
+    # #Startup/runtime files.
+    # mkdir -p uefi-sct/SctPkg/BBR
+    # if [ $BUILD_PLAT = IR ]; then
+    # #EBBR
+    # cp $BBR_DIR/ebbr/config/EBBRStartup.nsh uefi-sct/SctPkg/BBR/
+    # cp $BBR_DIR/ebbr/config/EBBR.seq uefi-sct/SctPkg/BBR/
+    # cp $BBR_DIR/ebbr/config/EBBR_manual.seq uefi-sct/SctPkg/BBR/
+    # cp $BBR_DIR/ebbr/config/EBBR_extd_run.seq uefi-sct/SctPkg/BBR/
+    # cp $BBR_DIR/ebbr/config/EfiCompliant_EBBR.ini uefi-sct/SctPkg/BBR/
+    # elif [ $BUILD_PLAT = ES ]; then
+    # #SBBR
+    # cp $BBR_DIR/sbbr/config/SBBRStartup.nsh uefi-sct/SctPkg/BBR/
+    # cp $BBR_DIR/sbbr/config/SBBR.seq uefi-sct/SctPkg/BBR/
+    # cp $BBR_DIR/sbbr/config/SBBR_manual.seq uefi-sct/SctPkg/BBR/
+    # cp $BBR_DIR/sbbr/config/SBBR_extd_run.seq uefi-sct/SctPkg/BBR/
+    # cp $BBR_DIR/sbbr/config/EfiCompliant_SBBR.ini  uefi-sct/SctPkg/BBR/
+    # fi
 
-    if [[ $BUILD_PLAT != SIE ]] ; then
-        if git apply --check $BBR_DIR/common/patches/edk2-test-bbr.patch; then
-            echo "Applying edk2-test BBR patch..."
-            git apply --ignore-whitespace --ignore-space-change $BBR_DIR/common/patches/edk2-test-bbr.patch
-        fi
-        if git apply --check $BBR_DIR/bbsr/patches/0001-SIE-Patch-for-UEFI-SCT-Build.patch; then
-            echo "Applying SIE SCT patch..."
-            git apply --ignore-whitespace --ignore-space-change $BBR_DIR/bbsr/patches/0001-SIE-Patch-for-UEFI-SCT-Build.patch
-        fi
-    fi
+    # if [[ $BUILD_PLAT != SIE ]] ; then
+    #     if git apply --check $BBR_DIR/common/patches/edk2-test-bbr.patch; then
+    #         echo "Applying edk2-test BBR patch..."
+    #         git apply --ignore-whitespace --ignore-space-change $BBR_DIR/common/patches/edk2-test-bbr.patch
+    #     fi
+    #     if git apply --check $BBR_DIR/bbsr/patches/0001-SIE-Patch-for-UEFI-SCT-Build.patch; then
+    #         echo "Applying SIE SCT patch..."
+    #         git apply --ignore-whitespace --ignore-space-change $BBR_DIR/bbsr/patches/0001-SIE-Patch-for-UEFI-SCT-Build.patch
+    #     fi
+    # fi
 
     pushd uefi-sct
-    if [[ $BUILD_PLAT = SIE ]] ; then
-        ./SctPkg/build.sh $TARGET_ARCH GCC $UEFI_BUILD_MODE  -n $PARALLELISM
-    else
-        ./SctPkg/build_bbr.sh $TARGET_ARCH GCC $UEFI_BUILD_MODE  -n $PARALLELISM
-    fi
+    DSC_EXTRA="ShellPkg/ShellPkg.dsc MdeModulePkg/MdeModulePkg.dsc" ./SctPkg/build.sh ${TARGET_ARCH} GCC RELEASE -n $PARALLELISM
+    # if [[ $BUILD_PLAT = SIE ]] ; then
+    #     ./SctPkg/build.sh $TARGET_ARCH GCC $UEFI_BUILD_MODE  -n $PARALLELISM
+    # else
+    #     ./SctPkg/build_bbr.sh $TARGET_ARCH GCC $UEFI_BUILD_MODE  -n $PARALLELISM
+    # fi
     
     popd
 }
@@ -233,10 +235,11 @@ do_package ()
 
     if [ $BUILD_PLAT = IR ]; then
         #EBBR
-        cp -r Build/bbrSct/${UEFI_BUILD_MODE}_${UEFI_TOOLCHAIN}/SctPackage${TARGET_ARCH}/${TARGET_ARCH}/* ${TARGET_ARCH}_SCT/SCT/
-        cp Build/bbrSct/${UEFI_BUILD_MODE}_${UEFI_TOOLCHAIN}/SctPackage${TARGET_ARCH}/EBBRStartup.nsh ${TARGET_ARCH}_SCT/SctStartup.nsh
-        cp SctPkg/BBR/EfiCompliant_EBBR.ini ${TARGET_ARCH}_SCT/SCT/Dependency/EfiCompliantBBTest/EfiCompliant.ini
-        cp SctPkg/BBR/EBBR_manual.seq ${TARGET_ARCH}_SCT/SCT/Sequence/EBBR_manual.seq
+        echo "skip package ..."
+        # cp -r Build/bbrSct/${UEFI_BUILD_MODE}_${UEFI_TOOLCHAIN}/SctPackage${TARGET_ARCH}/${TARGET_ARCH}/* ${TARGET_ARCH}_SCT/SCT/
+        # cp Build/bbrSct/${UEFI_BUILD_MODE}_${UEFI_TOOLCHAIN}/SctPackage${TARGET_ARCH}/EBBRStartup.nsh ${TARGET_ARCH}_SCT/SctStartup.nsh
+        # cp SctPkg/BBR/EfiCompliant_EBBR.ini ${TARGET_ARCH}_SCT/SCT/Dependency/EfiCompliantBBTest/EfiCompliant.ini
+        # cp SctPkg/BBR/EBBR_manual.seq ${TARGET_ARCH}_SCT/SCT/Sequence/EBBR_manual.seq
 
     elif [ $BUILD_PLAT = ES ]; then
         # Sign the SCT binaries

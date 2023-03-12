@@ -60,14 +60,14 @@ get_sct_src()
 {
     git clone --single-branch https://github.com/tianocore/edk2-test
     pushd $TOP_DIR/edk2-test
-    git checkout 8713740892bdb857e970a2841de9800b2c6b5552
+    git checkout 06f84debb796b2f6ac893b130e90ab5599195b29
     popd
 }
 
 get_uefi_src()
 {
     git clone --depth 1 --single-branch \
-    --branch edk2-stable202102 https://github.com/tianocore/edk2.git
+    --branch edk2-stable202208 https://github.com/tianocore/edk2.git
     pushd $TOP_DIR/edk2
     git submodule update --init
     popd
@@ -80,5 +80,5 @@ sudo apt install git curl mtools gdisk gcc\
 
 get_uefi_src
 get_sct_src
-get_cross_compiler
-get_fwts_src
+#get_cross_compiler
+#get_fwts_src
